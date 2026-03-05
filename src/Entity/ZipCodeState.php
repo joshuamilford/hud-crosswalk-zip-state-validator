@@ -16,33 +16,23 @@ class ZipCodeState
     #[ORM\Column]
     private ?int $id = null;
 
-    /**
-     * 5-digit ZIP code
-     */
     #[ORM\Column(length: 5)]
     private string $zipCode;
 
-    /**
-     * 2-letter state abbreviation (e.g. "TX")
-     */
     #[ORM\Column(length: 2)]
     private string $stateAbbr;
 
-    /**
-     * 2-digit state FIPS code (e.g. "48")
-     */
     #[ORM\Column(length: 2)]
     private string $stateFips;
 
     /**
-     * Residential address ratio — share of residential addresses in this zip that fall in this state.
-     * A zip with res_ratio < 1.0 for any single state spans multiple states.
+     * Share of residential addresses in this ZIP that fall in this state.
      */
     #[ORM\Column(type: 'decimal', precision: 10, scale: 9)]
     private string $resRatio;
 
     /**
-     * True when this ZIP code is associated with more than one state in our dataset.
+     * True when this ZIP is associated with more than one state.
      */
     #[ORM\Column]
     private bool $isMultiState = false;
@@ -50,8 +40,20 @@ class ZipCodeState
     #[ORM\Column]
     private \DateTimeImmutable $importedAt;
 
-    #[ORM\Column(length: 6)]
-    private string $dataQuarter; // e.g. "2024Q4"
+    #[ORM\Column(length: 10)]
+    private string $dataQuarter;
+
+    /**
+     * Centroid latitude from Census ZCTA Gazetteer.
+     */
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $latitude = null;
+
+    /**
+     * Centroid longitude from Census ZCTA Gazetteer.
+     */
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $longitude = null;
 
     public function __construct(
         string $zipCode,
@@ -68,18 +70,18 @@ class ZipCodeState
         $this->importedAt  = new \DateTimeImmutable();
     }
 
-    public function getId(): ?int { return $this->id; }
-    public function getZipCode(): string { return $this->zipCode; }
-    public function getStateAbbr(): string { return $this->stateAbbr; }
-    public function getStateFips(): string { return $this->stateFips; }
-    public function getResRatio(): string { return $this->resRatio; }
-    public function isMultiState(): bool { return $this->isMultiState; }
-    public function getDataQuarter(): string { return $this->dataQuarter; }
+    public function getId(): ?int                       { return $this->id; }
+    public function getZipCode(): string                { return $this->zipCode; }
+    public function getStateAbbr(): string              { return $this->stateAbbr; }
+    public function getStateFips(): string              { return $this->stateFips; }
+    public function getResRatio(): string               { return $this->resRatio; }
+    public function isMultiState(): bool                { return $this->isMultiState; }
+    public function getDataQuarter(): string            { return $this->dataQuarter; }
     public function getImportedAt(): \DateTimeImmutable { return $this->importedAt; }
+    public function getLatitude(): ?float               { return $this->latitude; }
+    public function getLongitude(): ?float              { return $this->longitude; }
 
-    public function setIsMultiState(bool $isMultiState): static
-    {
-        $this->isMultiState = $isMultiState;
-        return $this;
-    }
+    public function setIsMultiState(bool $v): static   { $this->isMultiState = $v; return $this; }
+    public function setLatitude(?float $v): static     { $this->latitude = $v; return $this; }
+    public function setLongitude(?float $v): static    { $this->longitude = $v; return $this; }
 }
